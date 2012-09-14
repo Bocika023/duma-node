@@ -20,10 +20,20 @@ exports.index = function(req, res) {
  */
 exports.special = function(req, res) {
   Quote.findOne({human_id: req.params['id']}, function(err, quote) {
-    if (req.params.format == 'json') {
-      res.json(quote);
+    if (err) {
+      Quote.random(function(err, quote) {
+        if (req.params.format == 'json') {
+          res.json(quote);
+        } else {
+          render_page(res, quote);
+        }
+      });
     } else {
-      render_page(res, quote);
+      if (req.params.format == 'json') {
+        res.json(quote);
+      } else {
+        render_page(res, quote);
+      }      
     }
   });
 };
