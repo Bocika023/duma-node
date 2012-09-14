@@ -14,10 +14,27 @@ var QuoteSchema = new Schema({
 
 QuoteSchema.static('random', function(cb) {
   var that = this;
-  this.count(function(err, max) {
+  return this.count(function(err, max) {
     var num = (Math.round(Math.random() * 1000) % max);
-    that.findOne({}).limit(1).skip(num).exec(cb);
+    return that.findOne({}).limit(1).skip(num).exec(cb);
   });
+});
+
+QuoteSchema.static('findByHumanIdOrGetRandom', function(id, cb) {
+  var _this = this;
+  return _this.findOne({human_id: id}, function(err, quote) {
+    if (err || quote === null) {
+      _this.random(function(err, quote) {
+        return cb(err, quote);
+      });
+    } else {
+      return cb(err, quote);
+    }
+  });
+});
+
+QuoteSchema.static('isConnected', function(cb) {
+  return cb(null, (mongoose.connection.readyState === 1 || mongoose.connection.readyState === 2));
 });
 
 module.exports.QuoteSchema = mongoose.model('Quote', QuoteSchema);

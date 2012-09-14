@@ -19,22 +19,12 @@ exports.index = function(req, res) {
  * By selected ID from parameters
  */
 exports.special = function(req, res) {
-  Quote.findOne({human_id: req.params['id']}, function(err, quote) {
-    if (err) {
-      Quote.random(function(err, quote) {
-        if (req.params.format == 'json') {
-          res.json(quote);
-        } else {
-          render_page(res, quote);
-        }
-      });
+  Quote.findByHumanIdOrGetRandom(req.params['id'], function(err, quote) {
+    if (req.params.format == 'json') {
+      res.json(quote);
     } else {
-      if (req.params.format == 'json') {
-        res.json(quote);
-      } else {
-        render_page(res, quote);
-      }      
-    }
+      render_page(res, quote);
+    }          
   });
 };
 
